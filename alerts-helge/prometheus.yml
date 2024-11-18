@@ -23,8 +23,7 @@ scrape_configs:
     # Override the global default and scrape targets from this job every 5 seconds.
     scrape_interval: 5s
 
-    static_configs:
-     #- targets: ['localhost:8080'] i Helges eksempel
+    static_configs: 
       - targets: ['host.docker.internal:8080']
         labels:
           group: 'production'

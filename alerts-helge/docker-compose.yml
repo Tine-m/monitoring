@@ -32,7 +32,7 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin   
-    volumes: # If we want tp persist data in a Docker volume
+    volumes: # If we want to persist data in a Docker volume
       - grafana-data:/var/lib/grafana 
     networks:
       - monitoring
