@@ -1,0 +1,7 @@
+global:
+  scrape_interval: 5s  # Adjust scrape interval to suit your needs
+
+scrape_configs:
+  - job_name: 'my_app'
+    static_configs:
+      - targets: ['host.docker.internal:8080']  # If running Prometheus on Docker, use 'host.docker.internal' to reference the host
