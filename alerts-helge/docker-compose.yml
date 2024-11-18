@@ -1,0 +1,54 @@
+services:
+  appserver:
+    build:
+      context: ./my_app
+    image: helgecph/promserver
+    ports:
+      - "8080:8080"
+    depends_on:
+      - grafana
+      - prometheus
+    networks:
+      - monitoring
+
+  appclient:
+    build:
+      context: ./my_client
+    image: helgecph/promclient
+    environment:  #overflødig at angive på linux
+      - SERVER=host.docker.internal
+      - PORT=8080
+    depends_on:
+      - appserver
+      - grafana
+      - prometheus
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"  
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin   
+    volumes: # If we want tp persist data in a Docker volume
+      - grafana-data:/var/lib/grafana 
+    networks:
+      - monitoring
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus.rules.yml:/etc/prometheus/prometheus.rules.yml 
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring
+ 
+networks:
+  monitoring:
+
+volumes:
+  grafana-data:

@@ -1,0 +1,40 @@
+groups:
+  - name: app_server_rules
+    rules:
+      # Recording Rule: Tracks the average CPU load over time
+      - record: job:cpu_load_percent:avg
+        expr: avg(cpu_load_percent) by (job)
+
+      # Alert Rule: High CPU Load
+      - alert: HighCpuLoad
+        expr: cpu_load_percent > 85
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU load detected"
+          description: "CPU load has been above 85% for more than 1 minute on {{ $labels.instance }}."
+
+      # Alert Rule: High Response Count
+      - alert: HighResponseCount
+        expr: increase(http_responses_total[5m]) > 1000
+        for: 5m
+        labels:
+          severity: info
+        annotations:
+          summary: "High request rate detected"
+          description: "The server handled over 1000 requests in the last 5 minutes on {{ $labels.instance }}."
+
+      # Recording Rule: Tracks 95th percentile latency for requests
+      - record: job:request_duration_milliseconds:95th_percentile
+        expr: histogram_quantile(0.95, sum(rate(request_duration_milliseconds_bucket[5m])) by (le))
+
+      # Alert Rule: High Latency
+      - alert: HighLatency
+        expr: job:request_duration_milliseconds:95th_percentile > 500
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High latency detected"
+          description: "95th percentile latency is above 500ms for more than 2 minutes on {{ $labels.instance }}."
